@@ -2,8 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Home } from "./components/Home";
 import AdminLobby from "./components/AdminLobby";
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Box, Container, Grid, makeStyles } from "@material-ui/core";
 import PlayerLobby from "./components/PlayerLobby";
+import CardContainer from "./components/CardContainer";
+import Lobby from "./components/Lobby";
+import { ProvideGame } from "./hooks/useGame";
+import Room from "./components/Room";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,18 +23,16 @@ function App() {
       <Router>
         <Switch>
           <Container>
-          <Grid
-      container
-      direction="column"
-      justify="center"
-      alignItems="center"
-      spacing={2}
-      className={classes.root}
-    >
-            <Route exact path="/" component={Home} />
-            <Route exact path="/:roomId/admin" component={AdminLobby} />
-            <Route exact path="/:roomId/player" component={PlayerLobby} />
-            </Grid>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              className={classes.root}
+            >
+              <Route exact path="/" component={Home} />
+              <Route exact path="/card" component={CardContainer} />
+              <Route exact path="/:roomId" component={Room} />
+            </Box>
           </Container>
         </Switch>
       </Router>

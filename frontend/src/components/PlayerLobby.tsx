@@ -37,22 +37,11 @@ interface Props {
 
 const PlayerLobby = (props: Props) => {
     let { roomId } = useParams<{ roomId: string }>();
-    const { connect, clients, connected } = useGame();
-    const [name, setName] = useState("");
-    const [open, setOpen] = useState(false);
+    const { players } = useGame();
 
     const classes = useStyles();
 
-    const handleClose = () => {
-        connect(name, roomId);
-        setOpen(false);
-      };
-    
-      useEffect(() => {
-        if (!connected) {
-          setOpen(true);
-        }
-      }, []);
+
 
     return (
         <Paper className={classes.paper}>
@@ -71,30 +60,9 @@ const PlayerLobby = (props: Props) => {
           </Grid>
   
           <Grid item xs={12}>
-            <UserList clients={clients} />
+            <UserList players={players} />
           </Grid>
         </Grid>
-  
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle id="form-dialog-title">Liity huoneeseen</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Nimi"
-              type="name"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Liity
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Paper>
     )
 }

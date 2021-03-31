@@ -1,8 +1,8 @@
 import { Button, Grid, makeStyles, Paper, TextField, Typography } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import { v4 as uuidv4 } from 'uuid';
-
+import socketIOClient from "socket.io-client";
+const SOCKET_SERVER_URL = "http://localhost:4000";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,15 +17,35 @@ const useStyles = makeStyles((theme) => ({
 
 export const Home = () => {
   const [roomId, setRoomId] = useState("");
-
+  const socketRef = useRef<SocketIOClient.Socket>();
   const history = useHistory();
 
-  const createRoom = () => {
-    history.push(`/${uuidv4()}/admin`)
-  }
+  useEffect(() => {
+    socketRef.current = socketIOClient(SOCKET_SERVER_URL);
+    console.log(socketRef.current);
+    socketRef.current.on('newGameCreated', (room: string) =>{
+      setRoomId(room);
+      joinRoom()
+  })
+    socketRef.current.on('joinConfirmed', ()=>{
+      joinRoom()
+  })
+    return () => {
+      console.log('dissconnected');
+      socketRef.current?.disconnect();
+    };
+  }, [])
 
   const joinRoom = () => {
-    history.push(`/${roomId}/player`)
+    history.push(`/${roomId}/lobby`)
+  }
+
+  const joinButton = () => {
+    socketRef.current?.emit('joining', {room:roomId})
+  }
+  const createButton = () => {
+    console.log('create');
+    socketRef.current?.emit('newGame')
   }
 
   const classes = useStyles();
@@ -64,10 +84,10 @@ export const Home = () => {
           />
         </Grid>
         <Grid item xs={6}>
-          <Button onClick={joinRoom} variant="contained" color="primary">Liity huoneeseen</Button>
+          <Button onClick={joinButton} variant="contained" color="primary">Liity huoneeseen</Button>
           </Grid>
           <Grid item xs={6}>
-          <Button onClick={createRoom} >Luo huone</Button>
+          <Button onClick={createButton} >Luo huone</Button>
           </Grid>
         
         </Grid>

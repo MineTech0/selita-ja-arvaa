@@ -1,30 +1,34 @@
-import { FormControlLabel, makeStyles, Slider, Switch, Typography } from "@material-ui/core";
-import React, { useState } from "react";
+import {
+  FormControlLabel,
+  makeStyles,
+  Slider,
+  Switch,
+  Typography,
+} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import useGame from "../hooks/useGame";
 
 interface Props {}
 
 const useStyles = makeStyles((theme) => ({
-    user: {
-      textAlign: 'left',
-    },
-  }));
+  user: {
+    textAlign: "left",
+  },
+}));
 
 const Settings = (props: Props) => {
   const [time, setTime] = useState(60);
-  const [state, setState] = React.useState({
-    checkedAdult: true,
-    checkedB: true,
-  });
+  const [adult, setAdult] = useState(false);
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+    setAdult(event.target.checked);
   };
-
 
   const classes = useStyles();
   return (
     <div className={classes.user}>
-        <Typography variant="h6" component="h6" gutterBottom>
+      <Typography variant="h6" component="h6" gutterBottom>
         Asetukset
       </Typography>
       <Typography id="discrete-slider" gutterBottom>
@@ -44,7 +48,7 @@ const Settings = (props: Props) => {
       <FormControlLabel
         control={
           <Switch
-            checked={state.checkedAdult}
+            checked={adult}
             onChange={handleChange}
             name="checkedAdult"
             color="primary"

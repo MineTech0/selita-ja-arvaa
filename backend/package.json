@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "server": "ts-node app.ts"
+    "server": "ts-node-dev app.ts"
   },
   "author": "Niilo Kurki",
   "license": "ISC",
@@ -18,6 +18,11 @@
     "express": "^4.17.1",
     "socket.io": "^4.0.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^4.2.3",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.0"
   }
 }

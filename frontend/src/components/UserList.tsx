@@ -8,11 +8,11 @@ import {
   Typography,
 } from "@material-ui/core";
 import React from "react";
-import { User } from "../hooks/useGame";
+import { Player } from "../hooks/useGame";
 import PersonIcon from "@material-ui/icons/Person";
 
 interface Props {
-  clients: User[];
+  players: Player[];
 }
 const useStyles = makeStyles((theme) => ({
     user: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-const UserList = ({ clients }: Props) => {
+const UserList = ({ players }: Props) => {
     const classes = useStyles();
   return (
     <div className={classes.user}>
@@ -28,7 +28,7 @@ const UserList = ({ clients }: Props) => {
         Pelaajat:
       </Typography>
       <List>
-        {clients.map((client) => (
+        {players.map((client) => (
           <ListItem>
             <ListItemAvatar>
               <Avatar>
