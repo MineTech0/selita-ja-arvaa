@@ -24,25 +24,34 @@ export interface GameContextI {
   right: () => void;
   skip: () => void;
   myTurn: boolean;
-
 }
 export interface SettingsI {
   time: number;
   adult: boolean;
 }
 export interface StateI {
-    players: Player[];
-    turn: Player;
-    words: string[];
-    word: string;
-    currentWord: string;
-    gameState: GameState;
+  players: Player[];
+  turn: Player;
+  words: string[];
+  word: string;
+  gameState: GameState;
 }
-export type GameState = "starting" | "myTurn" | "othersTurn" | "lobby" | 'endRound';
-
+export type GameState =
+  | "starting"
+  | "myTurn"
+  | "othersTurn"
+  | "lobby"
+  | "endRound";
+const defaultState: StateI = {
+  players: [],
+  turn: {} as Player,
+  words: [],
+  word: "",
+  gameState: "lobby",
+};
 const useProvideGame = (): GameContextI => {
-  const [state, setState] = useState<StateI>({} as StateI)
-  const [myTurn, setMyTurn] = useState(false)
+  const [state, setState] = useState<StateI>(defaultState);
+  const [myTurn, setMyTurn] = useState(false);
   const socketRef = useRef<SocketIOClient.Socket>();
   const history = useHistory();
   let { roomId } = useParams<{ roomId: string }>();
@@ -51,14 +60,18 @@ const useProvideGame = (): GameContextI => {
     console.log("registered");
     socketRef.current = socketIOClient(SOCKET_SERVER_URL);
 
-    socketRef.current.on("newPlayer", ({ players }: { players: Player[] }) => {
-      setState({...state, players})
+    socketRef.current.on("newPlayers", ({ players }: { players: Player[] }) => {
+      setState(s => ({ ...s, players }));
     });
-    socketRef.current.on("newState", ({ state }: { state: StateI }) => {
-      setState(state)
+    socketRef.current.on("newState", ({ newPlayers}: { newPlayers: Player[] }) => {
+      console.log(state);
+      setState(state);
     });
     socketRef.current.on("endRound", () => {
-      setState({...state, gameState: 'endRound'})
+      setState(s => ({ ...s, gameState: "endRound" }));
+      setTimeout(() => {
+        socketRef.current?.emit("nextRound",{room: roomId});
+      }, 10000);
     });
     socketRef.current.on("joinError", () => {
       history.push("/");
@@ -72,19 +85,20 @@ const useProvideGame = (): GameContextI => {
         settings: SettingsI;
         startPlayer: Player;
       }) => {
+        console.log(startPlayer);
         if (startPlayer.id === socketRef.current?.id) {
           setMyTurn(true);
         }
-        setState({...state, gameState:'starting'});
+        setState(s => ({ ...s, gameState: "starting" }));
       }
     );
-    socketRef.current.on("startRound", ({ turn }: { turn: Player }) => {
-      
-      if(turn.id === socketRef.current?.id){
-        setState({...state, turn, gameState:'myTurn'})
-      }
-      else {
-        setState({...state, turn, gameState:'othersTurn'})
+    socketRef.current.on("startRound", ({ turn, words  }: { turn: Player, words: string[] }) => {
+      if (turn.id === socketRef.current?.id) {
+        setMyTurn(true);
+        setState(s => ({ ...s, turn, words, word: words[0], gameState: "myTurn" }));
+      } else {
+        setMyTurn(false);
+        setState(s => ({ ...s, turn, words, gameState: "othersTurn" }));
       }
     });
 
@@ -102,28 +116,34 @@ const useProvideGame = (): GameContextI => {
   };
 
   const right = () => {
-    const newState = {...state, players: editPoints(1)}
-    setState(newState)
-    socketRef.current?.emit("updateState", { state: newState, room: roomId });
+    const newPlayers =  editPoints(1)
+    setState(s => ({...s, players:newPlayers}));
+    socketRef.current?.emit("changePoints", { newPlayers, room: roomId });
     nextWord();
   };
   const skip = () => {
-    const newState = {...state, players: editPoints(-1)}
-    setState(newState)
-    socketRef.current?.emit("updateState", { state: newState, room: roomId });
+    const newPlayers =  editPoints(-1)
+    setState(s => ({...s, players:newPlayers}));
+    socketRef.current?.emit("changePoints", { newPlayers, room: roomId });
     nextWord();
   };
   const nextWord = () => {
-    setState({...state, word: state.words[state.words.indexOf(state.word as never) + 1 ]})
+    setState({
+      ...state,
+      word: state.words[state.words.indexOf(state.word as never) + 1],
+    });
   };
 
-  const editPoints = (modifier: -1| 1) => {
-    let players = state.players
-    let meIndex = players.findIndex((p)=> p.id === socketRef.current?.id)
-    players[meIndex] = {...players[meIndex], points: players[meIndex].points + modifier }
-    return players
-
-  }
+  const editPoints = (modifier: -1 | 1) => {
+    let players = state.players;
+    console.log(players);
+    let meIndex = players.findIndex((p) => p.id === socketRef.current?.id);
+    players[meIndex] = {
+      ...players[meIndex],
+      points: players[meIndex].points + modifier,
+    };
+    return players;
+  };
 
   return {
     state,
@@ -131,8 +151,7 @@ const useProvideGame = (): GameContextI => {
     startGame,
     right,
     skip,
-    myTurn
-
+    myTurn,
   };
 };
 const GameContext = createContext<GameContextI | undefined>(undefined);

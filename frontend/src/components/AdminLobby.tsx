@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdminLobby = () => {
-  const { players, startGame } = useGame();
+  const { state, startGame } = useGame();
   let { roomId } = useParams<{ roomId: string }>();
   const [settings, setSettings] = useState({
     time: 60,
@@ -63,13 +63,13 @@ const AdminLobby = () => {
         </Grid>
 
         <Grid item xs={6}>
-          <UserList players={players} />
+          <UserList players={state.players} />
         </Grid>
         <Grid item xs={6}>
           <Settings setSettings={setSettings} />
         </Grid>
         <Grid item xs={12} className={classes.button}>
-          <Button variant="contained" color="primary" onClick={startButton} disabled={players.length < 2}>
+          <Button variant="contained" color="primary" onClick={startButton} disabled={state.players.length < 2}>
             Aloita peli
           </Button>
         </Grid>

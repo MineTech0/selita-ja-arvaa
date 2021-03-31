@@ -14,10 +14,9 @@ import Lobby from "./Lobby";
 
 function Room() {
   const [name, setName] = useState("");
-  const [started, setStarted] = useState(false);
   const [open, setOpen] = useState(true);
   let { roomId } = useParams<{ roomId: string }>();
-  const {joinRoom, gameState} = useGame();
+  const {joinRoom, state} = useGame();
 
   const handleClose = () => {
     setOpen(false);
@@ -26,7 +25,7 @@ function Room() {
 
   return (
       <>
-      {gameState !=='lobby' ? <Game /> : <Lobby />}
+      {state.gameState !=='lobby' ? <Game /> : <Lobby />}
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">Liity huoneeseen</DialogTitle>

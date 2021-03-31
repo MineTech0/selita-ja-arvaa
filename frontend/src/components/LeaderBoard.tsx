@@ -25,18 +25,18 @@ const useStyles = makeStyles((theme) => ({
 const players = [{ name: "niilo", points: 6, id: "235" }];
 function LeaderBoard({}: Props): ReactElement {
   const classes = useStyles();
-  // const { state } = useGame()
+const { state } = useGame()
   return (
     <Paper elevation={3} className={classes.card}>
       <List>
-        {players.map((client) => (
-          <ListItem key={client.id}>
+        {state.players.map((player) => (
+          <ListItem key={player.id}>
             <ListItemAvatar>
               <Avatar>
                 <PersonIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={client.name} secondary={client.points} />
+            <ListItemText primary={player.name} secondary={player.points} />
           </ListItem>
         ))}
       </List>

@@ -2,7 +2,7 @@ import SocketIO from "socket.io";
 import { Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 import Player from "./Player";
-import words from './Words.json'
+import words from "./Words.json";
 
 const server = require("http").createServer();
 const io = require("socket.io")(server, {
@@ -13,13 +13,13 @@ const io = require("socket.io")(server, {
 
 const PORT = 4000;
 
-const  GetRandomWords = (count: number) => {
-    let list = []
-    for (let index = 0; index < count; index++) {
-        list.push(words[index])
-    }
-    return list;
-}
+const GetRandomWords = (count: number) => {
+  let list = [];
+  for (let index = 0; index < count; index++) {
+    list.push(words[index]);
+  }
+  return list;
+};
 
 //Store the room ids mapping to the room property object
 //The room property object looks like this {roomid:str, players:Array(2)}
@@ -31,7 +31,7 @@ const makeRoom = (resolve: any) => {
   while (rooms.has(newRoom)) {
     newRoom = uuidv4();
   }
-  rooms.set(newRoom, { roomId: newRoom, players: [], state: {} });
+  rooms.set(newRoom, { roomId: newRoom, players: [], turn: {} });
   resolve(newRoom);
 };
 
@@ -42,6 +42,20 @@ const joinRoom = (player: Player, room: string) => {
   rooms.set(room, { ...currentRoom, players: updatedPlayerList });
 };
 
+const startRound = (room: string) => {
+  const currentRoom = rooms.get(room);
+  console.log(currentRoom.turn);
+  io.to(room).emit("startingGame", { startPlayer: currentRoom.turn });
+
+  const words = GetRandomWords(12);
+
+  setTimeout(() => {
+    io.to(room).emit("startRound", { words, turn: currentRoom.turn });
+    setTimeout(() => {
+      io.to(room).emit("endRound");
+    }, 6000);
+  }, 6000);
+};
 
 io.on("connection", (socket: SocketIO.Socket) => {
   console.log("connection");
@@ -66,64 +80,60 @@ io.on("connection", (socket: SocketIO.Socket) => {
   });
 
   socket.on("newRoomJoin", ({ room, name }) => {
-   
     //If someone tries to go to the game page without a room or name then
     //redirect them back to the start page
-    if (room === "" || name === "" || !rooms.get(room) || rooms.get(room).players.lenght >= 2 ) {
+    if (
+      room === "" ||
+      name === "" ||
+      !rooms.get(room) ||
+      rooms.get(room).players.lenght >= 2
+    ) {
       io.to(socket.id).emit("joinError");
-      console.log('joinError')
-    }
-    else {
-
+      console.log("joinError");
+    } else {
       //Put the new player into the room
       socket.join(room);
       const id = socket.id;
       const newPlayer = {
         id,
         room,
-        name
-      }
+        name,
+        points: 0,
+      };
       joinRoom(newPlayer, room);
-      const players = rooms.get(room).players
-      console.log(players)
-      io.to(socket.id).emit("joinSucces", {me: newPlayer} );
-      io.to(room).emit("newPlayer", {players} );
+      const players = rooms.get(room).players;
+      console.log(players);
+      io.to(room).emit("newPlayers", { players });
     }
-
   });
-
 
   socket.on("startGame", ({ settings, room }) => {
-   const currentRoom = rooms.get(room)
-   if(currentRoom.players.lenght < 2){
-    io.to(room).emit("startError");
-   }
-   else {
-
-     console.log(settings,room)
-     const startPlayer = currentRoom.players[0];
-     console.log(startPlayer)
-     io.to(room).emit("startingGame", {settings,startPlayer } );
-  
-     const words = GetRandomWords(12);
-      const state = {
-        turn: startPlayer,
-        points: 0,
-        words
-      }
-  
-     setTimeout(() => {
-      io.to(room).emit("startRound", {state} );
-      setTimeout(() => {
-        io.to(room).emit("endRound");
-      }, 6000);
-     },6000);
-   }
+    const currentRoom = rooms.get(room);
+    if (currentRoom.players.lenght < 2) {
+      io.to(room).emit("startError");
+    } else {
+      const turn = currentRoom.players[0];
+    rooms.set(room, { ...currentRoom, turn });
+      startRound(room);
+      console.log(settings, room);
+    }
   });
 
-  socket.on("updateState", ({ state, room}) => {
-    socket.to(room).emit("newState", {state} );
-  })
+  socket.on("changePoints", ({ newPlayers, room }) => {
+    const currentRoom = rooms.get(room);
+    rooms.set(room, { ...currentRoom, players: newPlayers });
+    socket.to(room).emit("newPlayers", { players: newPlayers });
+  });
+
+  socket.on("nextRound", ({ room }) => {
+    const currentRoom = rooms.get(room);
+    const index = currentRoom.players.indexOf((p:any) => p.id === currentRoom.turn.id)
+    console.log(index)
+    const turn =
+      currentRoom.players[ index === 0 ? 1:0];
+    rooms.set(room, { ...currentRoom, turn });
+    startRound(room);
+  });
 
   //On disconnect event
   socket.on("disconnecting", () => {

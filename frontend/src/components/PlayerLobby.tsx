@@ -37,7 +37,7 @@ interface Props {
 
 const PlayerLobby = (props: Props) => {
     let { roomId } = useParams<{ roomId: string }>();
-    const { players } = useGame();
+    const { state } = useGame();
 
     const classes = useStyles();
 
@@ -60,7 +60,7 @@ const PlayerLobby = (props: Props) => {
           </Grid>
   
           <Grid item xs={12}>
-            <UserList players={players} />
+            <UserList players={state.players} />
           </Grid>
         </Grid>
       </Paper>

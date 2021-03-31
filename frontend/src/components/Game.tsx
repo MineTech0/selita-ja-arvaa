@@ -7,12 +7,12 @@ import LeaderBoard from "./LeaderBoard";
 import WaitingCard from "./WaitingCard";
 
 const Game = () => {
-  const { right, skip, word, points, gameState, myTurn } = useGame();
+  const { right, skip, myTurn, state } = useGame();
 
     const Render = () => {
-        switch (gameState) {
+        switch (state.gameState) {
             case 'myTurn':
-                return <CardContainer right={right} skip={skip} word={word} />
+                return <CardContainer right={right} skip={skip} word={state.word} />
         
             case 'othersTurn':
                 return <Typography variant="subtitle1">Arvaa kun kaverisi selittää</Typography>
