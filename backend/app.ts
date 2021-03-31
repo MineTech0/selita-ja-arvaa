@@ -2,6 +2,7 @@ import SocketIO from "socket.io";
 import { Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 import Player from "./Player";
+import words from './Words.json'
 
 const server = require("http").createServer();
 const io = require("socket.io")(server, {
@@ -12,14 +13,13 @@ const io = require("socket.io")(server, {
 
 const PORT = 4000;
 
-io.use((socket: any, next: any) => {
-  const name = socket.handshake.auth.name;
-  if (!name) {
-    return next(new Error("invalid name"));
-  }
-  socket.name = name;
-  next();
-});
+const  GetRandomWords = (count: number) => {
+    let list = []
+    for (let index = 0; index < count; index++) {
+        list.push(words[index])
+    }
+    return list;
+}
 
 //Store the room ids mapping to the room property object
 //The room property object looks like this {roomid:str, players:Array(2)}
@@ -31,21 +31,17 @@ const makeRoom = (resolve: any) => {
   while (rooms.has(newRoom)) {
     newRoom = uuidv4();
   }
-  rooms.set(newRoom, { roomId: newRoom, players: [] });
+  rooms.set(newRoom, { roomId: newRoom, players: [], state: {} });
   resolve(newRoom);
 };
 
 //Put the newly joined player into a room's player list
 const joinRoom = (player: Player, room: string) => {
   const currentRoom = rooms.get(room);
-  const updatedPlayerList = currentRoom.players.push(player);
+  const updatedPlayerList = currentRoom.players.concat(player);
   rooms.set(room, { ...currentRoom, players: updatedPlayerList });
 };
 
-//Check how many player is currently in the room
-function getRoomPlayersNum(room: string) {
-  return rooms.get(room).players.length;
-}
 
 io.on("connection", (socket: SocketIO.Socket) => {
   console.log("connection");
@@ -70,20 +66,64 @@ io.on("connection", (socket: SocketIO.Socket) => {
   });
 
   socket.on("newRoomJoin", ({ room, name }) => {
+   
     //If someone tries to go to the game page without a room or name then
     //redirect them back to the start page
-    if (room === "" || name === "") {
+    if (room === "" || name === "" || !rooms.get(room) || rooms.get(room).players.lenght >= 2 ) {
       io.to(socket.id).emit("joinError");
+      console.log('joinError')
+    }
+    else {
+
+      //Put the new player into the room
+      socket.join(room);
+      const id = socket.id;
+      const newPlayer = {
+        id,
+        room,
+        name
+      }
+      joinRoom(newPlayer, room);
+      const players = rooms.get(room).players
+      console.log(players)
+      io.to(socket.id).emit("joinSucces", {me: newPlayer} );
+      io.to(room).emit("newPlayer", {players} );
     }
 
-    //Put the new player into the room
-    socket.join(room);
-    const id = socket.id;
-    const newPlayer = new Player(name, room, id);
-    joinRoom(newPlayer, room);
-
-    socket.emit("newPlayer", { players: rooms.get(room).players });
   });
+
+
+  socket.on("startGame", ({ settings, room }) => {
+   const currentRoom = rooms.get(room)
+   if(currentRoom.players.lenght < 2){
+    io.to(room).emit("startError");
+   }
+   else {
+
+     console.log(settings,room)
+     const startPlayer = currentRoom.players[0];
+     console.log(startPlayer)
+     io.to(room).emit("startingGame", {settings,startPlayer } );
+  
+     const words = GetRandomWords(12);
+      const state = {
+        turn: startPlayer,
+        points: 0,
+        words
+      }
+  
+     setTimeout(() => {
+      io.to(room).emit("startRound", {state} );
+      setTimeout(() => {
+        io.to(room).emit("endRound");
+      }, 6000);
+     },6000);
+   }
+  });
+
+  socket.on("updateState", ({ state, room}) => {
+    socket.to(room).emit("newState", {state} );
+  })
 
   //On disconnect event
   socket.on("disconnecting", () => {

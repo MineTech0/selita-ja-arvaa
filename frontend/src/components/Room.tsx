@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
-import { ProvideGame } from "../hooks/useGame";
+import { useHistory, useParams } from "react-router";
+import useGame, { ProvideGame } from "../hooks/useGame";
 import {
   Button,
   Dialog,
@@ -11,32 +11,22 @@ import {
 } from "@material-ui/core";
 import Game from "./Game";
 import Lobby from "./Lobby";
-import socketIOClient from "socket.io-client";
-const SOCKET_SERVER_URL = "http://localhost:4000";
 
 function Room() {
   const [name, setName] = useState("");
   const [started, setStarted] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   let { roomId } = useParams<{ roomId: string }>();
-  const socketRef = useRef<SocketIOClient.Socket>();
-
-  useEffect(() => {
-    socketRef.current = socketIOClient(SOCKET_SERVER_URL);
-    return () => {
-      socketRef.current?.disconnect();
-    };
-  }, []);
+  const {joinRoom, gameState} = useGame();
 
   const handleClose = () => {
     setOpen(false);
-    socketRef.current?.emit("newRoomJoin", { room: roomId, name });
+    joinRoom(roomId, name)
   };
 
   return (
-    <ProvideGame>
-      <Lobby />
-      {started ? <Game /> : null}
+      <>
+      {gameState !=='lobby' ? <Game /> : <Lobby />}
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">Liity huoneeseen</DialogTitle>
@@ -58,7 +48,7 @@ function Room() {
           </Button>
         </DialogActions>
       </Dialog>
-    </ProvideGame>
+      </>
   );
 }
 

@@ -19,25 +19,23 @@ export const Home = () => {
   const [roomId, setRoomId] = useState("");
   const socketRef = useRef<SocketIOClient.Socket>();
   const history = useHistory();
-
+  
   useEffect(() => {
     socketRef.current = socketIOClient(SOCKET_SERVER_URL);
     console.log(socketRef.current);
     socketRef.current.on('newGameCreated', (room: string) =>{
-      setRoomId(room);
-      joinRoom()
+      joinRoom(room)
   })
     socketRef.current.on('joinConfirmed', ()=>{
-      joinRoom()
+      joinRoom(roomId)
   })
     return () => {
       console.log('dissconnected');
-      socketRef.current?.disconnect();
     };
   }, [])
 
-  const joinRoom = () => {
-    history.push(`/${roomId}/lobby`)
+  const joinRoom = (room: string) => {
+    history.push(`/${room}`)
   }
 
   const joinButton = () => {

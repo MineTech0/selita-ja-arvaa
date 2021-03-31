@@ -7,7 +7,7 @@ import PlayerLobby from './PlayerLobby';
 
 
 const Lobby = () => {
-  const admin = useGame();
+  const admin = true;
     return (
     <>
             {admin ? <AdminLobby/> : <PlayerLobby/> }

@@ -1,33 +1,43 @@
-import React, { useState } from 'react'
-import CardContainer from './CardContainer'
+import { Grid, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import useGame from "../hooks/useGame";
+import CardContainer from "./CardContainer";
+import EndRound from "./EndRound";
+import LeaderBoard from "./LeaderBoard";
+import WaitingCard from "./WaitingCard";
 
-interface Props {
-    
-}
+const Game = () => {
+  const { right, skip, word, points, gameState, myTurn } = useGame();
 
-const words = ['sana1', 'sana2', 'sana3', 'sana4'];
+    const Render = () => {
+        switch (gameState) {
+            case 'myTurn':
+                return <CardContainer right={right} skip={skip} word={word} />
+        
+            case 'othersTurn':
+                return <Typography variant="subtitle1">Arvaa kun kaverisi selittää</Typography>
+        
+            case 'starting':
+                return  <WaitingCard text={myTurn ? "Sinä aloitat" : "Toinen pelaaja aloittaa"}/>
 
-const Game = (props: Props) => {
-    const [word, setWord] = useState(words[0])
-    const [points, setPoints] = useState(0)
-    const right = () => {
-        setPoints(points+1)
-        nextWord()
-    }
-    const skip = () => {
-        setPoints(points-1)
-        nextWord()
-    }
-    const nextWord = () => {
-        setWord(words[words.indexOf(word) +1 ])
-    }
+            case 'endRound':
+                return <EndRound/>
+        }
+    };
+  return (
+    <Grid
+    container
+    direction="row"
+    spacing={2}
+  >
+      <Grid item>
+        <LeaderBoard/>
+      </Grid>
+      <Grid item>
+      {Render()}
+      </Grid>
+    </Grid>
+  );
+};
 
-    return (
-        <div>
-            <p>{points}</p>
-            <CardContainer right={right} skip={skip} word={word}/>
-        </div>
-    )
-}
-
-export default Game
+export default Game;

@@ -8,6 +8,7 @@ import CardContainer from "./components/CardContainer";
 import Lobby from "./components/Lobby";
 import { ProvideGame } from "./hooks/useGame";
 import Room from "./components/Room";
+import LeaderBoard from "./components/LeaderBoard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,6 +19,12 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+
+  const RoomProvider = () => (
+    <ProvideGame>
+      <Room/>
+    </ProvideGame>
+  )
   return (
     <div className="App">
       <Router>
@@ -30,8 +37,7 @@ function App() {
               className={classes.root}
             >
               <Route exact path="/" component={Home} />
-              <Route exact path="/card" component={CardContainer} />
-              <Route exact path="/:roomId" component={Room} />
+              <Route exact path="/:roomId" component={RoomProvider} />
             </Box>
           </Container>
         </Switch>

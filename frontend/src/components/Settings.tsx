@@ -6,9 +6,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import useGame from "../hooks/useGame";
+import { SettingsI } from "../hooks/useGame";
 
-interface Props {}
+
+interface Props {
+  setSettings: (settings: SettingsI) => void;
+}
 
 const useStyles = makeStyles((theme) => ({
   user: {
@@ -16,9 +19,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Settings = (props: Props) => {
+const Settings = ({setSettings}: Props) => {
   const [time, setTime] = useState(60);
   const [adult, setAdult] = useState(false);
+
+  useEffect(() => {
+    setSettings({
+      time,
+      adult
+    })
+  }, [time, adult])
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

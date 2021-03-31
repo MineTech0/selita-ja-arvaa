@@ -29,7 +29,7 @@ const UserList = ({ players }: Props) => {
       </Typography>
       <List>
         {players.map((client) => (
-          <ListItem>
+          <ListItem key={client.id}>
             <ListItemAvatar>
               <Avatar>
                 <PersonIcon />

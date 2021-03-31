@@ -7,6 +7,13 @@ class Player {
         this.room = room
         this.id = id
     }
+    function getObject(): Player {
+        return {
+            name: this.name,
+            room: this.room,
+            id: this.id
+        }
+    }
 }
 
 export default Player
