@@ -2,8 +2,9 @@ import SocketIO from "socket.io";
 import { Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 import Player from "./Player";
-import words from "./Words.json";
+import data from "./data.json";
 
+const words = data.words
 const server = require("http").createServer();
 const io = require("socket.io")(server, {
   cors: {
@@ -16,7 +17,7 @@ const PORT = 4000;
 const GetRandomWords = (count: number) => {
   let list = [];
   for (let index = 0; index < count; index++) {
-    list.push(words[index]);
+    list.push(words[Math.random() * words.length |0]);
   }
   return list;
 };
@@ -44,25 +45,20 @@ const joinRoom = (player: Player, room: string) => {
 
 const startRound = (room: string) => {
   const currentRoom = rooms.get(room);
-  console.log(currentRoom.turn);
-  io.to(room).emit("startingGame", { startPlayer: currentRoom.turn });
+  io.to(room).emit("startingGame", { startPlayer: currentRoom.turn, settings: currentRoom.settings });
 
-  const words = GetRandomWords(12);
+  const words = GetRandomWords(50);
 
   setTimeout(() => {
     io.to(room).emit("startRound", { words, turn: currentRoom.turn });
     setTimeout(() => {
       io.to(room).emit("endRound");
-    }, 6000);
+    }, 1000* currentRoom.settings.time);
   }, 6000);
 };
 
 io.on("connection", (socket: SocketIO.Socket) => {
   console.log("connection");
-  socket.on("*", function (event, data) {
-    console.log(event);
-    console.log(data);
-  });
   //On the client submit event (on start page) to create a new room
   socket.on("newGame", () => {
     new Promise(makeRoom).then((room) => {
@@ -73,20 +69,19 @@ io.on("connection", (socket: SocketIO.Socket) => {
   //On the client submit event (on start page) to join a room
   socket.on("joining", ({ room }) => {
     if (rooms.has(room)) {
-      socket.emit("joinConfirmed");
+      socket.emit("joinConfirmed",room);
     } else {
       socket.emit("errorMessage", "No room with that id found");
     }
   });
 
   socket.on("newRoomJoin", ({ room, name }) => {
-    //If someone tries to go to the game page without a room or name then
-    //redirect them back to the start page
+    const currentRoom = rooms.get(room)
     if (
       room === "" ||
       name === "" ||
-      !rooms.get(room) ||
-      rooms.get(room).players.lenght >= 2
+      !currentRoom ||
+      currentRoom.players.lenght >= 2
     ) {
       io.to(socket.id).emit("joinError");
       console.log("joinError");
@@ -99,10 +94,10 @@ io.on("connection", (socket: SocketIO.Socket) => {
         room,
         name,
         points: 0,
+        admin: rooms.get(room).players.length === 0
       };
       joinRoom(newPlayer, room);
       const players = rooms.get(room).players;
-      console.log(players);
       io.to(room).emit("newPlayers", { players });
     }
   });
@@ -113,9 +108,8 @@ io.on("connection", (socket: SocketIO.Socket) => {
       io.to(room).emit("startError");
     } else {
       const turn = currentRoom.players[0];
-    rooms.set(room, { ...currentRoom, turn });
+    rooms.set(room, { ...currentRoom, turn, settings });
       startRound(room);
-      console.log(settings, room);
     }
   });
 
@@ -127,8 +121,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   socket.on("nextRound", ({ room }) => {
     const currentRoom = rooms.get(room);
-    const index = currentRoom.players.indexOf((p:any) => p.id === currentRoom.turn.id)
-    console.log(index)
+    const index = currentRoom.players.findIndex((p:any) => p.id === currentRoom.turn.id)
     const turn =
       currentRoom.players[ index === 0 ? 1:0];
     rooms.set(room, { ...currentRoom, turn });
@@ -137,25 +130,22 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   //On disconnect event
   socket.on("disconnecting", () => {
-    //Get all the rooms that the socket is currently subscribed to
-    const currentRooms = Object.keys(socket.rooms);
-    //In this game an object can only have 2 rooms max so we check for that
-    // if (currentRooms.length === 2){
-    //     //The game room is always the second element of the list
-    //     const room = currentRooms[1]
-    //     const num = getRoomPlayersNum(room)
-    //     //If one then no one is left so we remove the room from the mapping
-    //     if (num === 1){
-    //         rooms.delete(room)
-    //     }
-    //     //If 2 then there is one person left so we remove the socket leaving from the player list and
-    //     //emit a waiting event to the other person
-    //     if (num === 2){
-    //         currentRoom = rooms.get(room)
-    //         currentRoom.players = currentRoom.players.filter((player) => player.id !== socket.id)
-    //         io.to(room).emit('waiting')
-    //     }
-    // }
+    const currentRooms = Array.from(socket.rooms);
+
+    if (currentRooms.length === 2){
+        const room = currentRooms[1]
+        const num = rooms.get(room).players.length
+        if (num === 1){
+            rooms.delete(room)
+        }
+        
+        if (num === 2){
+            const currentRoom = rooms.get(room)
+            const players  = currentRoom.players.filter((player:any) => player.id !== socket.id)
+            rooms.set(room, {...currentRoom, players})
+            io.to(room).emit("newPlayers", { players });
+        }
+    }
   });
 });
 

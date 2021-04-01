@@ -1,40 +1,62 @@
 import { Grid, Typography } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import useGame from "../hooks/useGame";
 import CardContainer from "./CardContainer";
 import EndRound from "./EndRound";
 import LeaderBoard from "./LeaderBoard";
+import TimerProgress from "./TimerProgress";
 import WaitingCard from "./WaitingCard";
 
 const Game = () => {
-  const { right, skip, myTurn, state } = useGame();
+  const { right, skip, myTurn, state, time } = useGame();
+  const Render = () => {
+    switch (state.gameState) {
+      case "myTurn":
+        return <CardContainer right={right} skip={skip} word={state.word} />;
 
-    const Render = () => {
-        switch (state.gameState) {
-            case 'myTurn':
-                return <CardContainer right={right} skip={skip} word={state.word} />
-        
-            case 'othersTurn':
-                return <Typography variant="subtitle1">Arvaa kun kaverisi selittää</Typography>
-        
-            case 'starting':
-                return  <WaitingCard text={myTurn ? "Sinä aloitat" : "Toinen pelaaja aloittaa"}/>
+      case "othersTurn":
+        let answerText = (
+          <Typography variant="subtitle1">
+            Arvaa kun kaverisi selittää
+          </Typography>
+        );
+        return <WaitingCard text={answerText} />;
 
-            case 'endRound':
-                return <EndRound/>
-        }
-    };
+      case "starting":
+        let startText = (
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Grid item>
+              <Typography variant="h2" gutterBottom>
+                Aloitetaan peliä
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle1" gutterBottom>
+                {myTurn ? "Sinä aloitat" : "Toinen pelaaja aloittaa"}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+        return <WaitingCard text={startText} />;
+
+      case "endRound":
+        return <WaitingCard text={<EndRound />} />;
+    }
+  };
   return (
-    <Grid
-    container
-    direction="row"
-    spacing={2}
-  >
+    <Grid container direction="row" spacing={2}>
       <Grid item>
-        <LeaderBoard/>
+        <LeaderBoard />
       </Grid>
+      <Grid item>{Render()}</Grid>
       <Grid item>
-      {Render()}
+        <TimerProgress value={time}/>
       </Grid>
     </Grid>
   );

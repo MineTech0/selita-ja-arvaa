@@ -26,8 +26,12 @@ export const Home = () => {
     socketRef.current.on('newGameCreated', (room: string) =>{
       joinRoom(room)
   })
-    socketRef.current.on('joinConfirmed', ()=>{
-      joinRoom(roomId)
+    socketRef.current.on('joinConfirmed', (room: string)=>{
+      console.log('joinCorfimed')
+      joinRoom(room)
+  })
+    socketRef.current.on('errorMessage', (message: string)=>{
+      console.log(message);
   })
     return () => {
       console.log('dissconnected');

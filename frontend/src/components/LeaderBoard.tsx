@@ -10,6 +10,7 @@ import {
 import  PersonIcon  from "@material-ui/icons/Person";
 import React, { ReactElement } from "react";
 import useGame from "../hooks/useGame";
+import StarIcon from '@material-ui/icons/Star';
 
 interface Props {}
 
@@ -22,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
 }));
-const players = [{ name: "niilo", points: 6, id: "235" }];
 function LeaderBoard({}: Props): ReactElement {
   const classes = useStyles();
 const { state } = useGame()
@@ -32,11 +32,12 @@ const { state } = useGame()
         {state.players.map((player) => (
           <ListItem key={player.id}>
             <ListItemAvatar>
-              <Avatar>
-                <PersonIcon />
+              <Avatar >
+                <PersonIcon/>
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={player.name} secondary={player.points} />
+            {player.admin ? <StarIcon fontSize="small"/> : null}
           </ListItem>
         ))}
       </List>

@@ -4,13 +4,11 @@ import useGame from '../hooks/useGame';
 import AdminLobby from './AdminLobby'
 
 import PlayerLobby from './PlayerLobby';
-
-
 const Lobby = () => {
-  const admin = true;
+  const {admin} = useGame()
     return (
     <>
-            {admin ? <AdminLobby/> : <PlayerLobby/> }
+            {admin() ? <AdminLobby/> : <PlayerLobby/> }
 
       </>
     )

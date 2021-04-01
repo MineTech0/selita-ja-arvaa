@@ -1,8 +1,16 @@
-import { Box, Button, ButtonGroup, Grid, makeStyles, Paper, Typography } from "@material-ui/core";
-import React from "react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  makeStyles,
+  Paper,
+  Typography,
+} from "@material-ui/core";
+import React, { ReactNode } from "react";
 
 interface Props {
-  word: string;
+  word: string | ReactNode;
   skip: () => void;
   right: () => void;
 }
@@ -15,8 +23,8 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
 }));
-
-const CardContainer = ({ word = "muuklainen", skip, right }: Props) => {
+<b></b>;
+const CardContainer = ({ word='loppu', skip, right }: Props) => {
   const classes = useStyles();
 
   return (
@@ -36,19 +44,19 @@ const CardContainer = ({ word = "muuklainen", skip, right }: Props) => {
             className={classes.box}
           >
             <Typography variant="subtitle1" gutterBottom>
-              {word}
+              {word==='loppu' ? <b>Sanat loppu</b> : word}
+              
             </Typography>
           </Box>
         </Paper>
       </Grid>
       <Grid item>
-        <ButtonGroup
-          size="large"
-          color="primary"
-        >
-          <Button onClick={skip}>Skippaa</Button>
-          <Button onClick={right}>Seuraava</Button>
-        </ButtonGroup>
+        {word!=='loppu'? (
+          <ButtonGroup size="large" color="primary">
+            <Button onClick={skip}>Skippaa</Button>
+            <Button onClick={right}>Seuraava</Button>
+          </ButtonGroup>
+        ) : null}
       </Grid>
     </Grid>
   );

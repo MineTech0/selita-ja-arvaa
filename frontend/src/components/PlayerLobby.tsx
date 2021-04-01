@@ -54,7 +54,7 @@ const PlayerLobby = (props: Props) => {
             <Typography variant="h4" component="h4" gutterBottom>
               Pelihuone
             </Typography>
-            <Typography variant="overline" display="block" gutterBottom>
+            <Typography variant="caption" display="block" gutterBottom>
               {roomId}
             </Typography>
           </Grid>

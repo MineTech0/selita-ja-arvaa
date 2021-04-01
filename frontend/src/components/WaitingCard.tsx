@@ -1,8 +1,8 @@
 import { Box, makeStyles, Paper, Typography } from '@material-ui/core'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 
 interface Props {
-    text: string;
+    text: ReactNode;
 }
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -24,13 +24,9 @@ function WaitingCard({text}: Props): ReactElement {
             alignItems="center"
             className={classes.box}
           >
-            <Typography variant="h2" gutterBottom>
-              Aloitetaan peliä
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-              {text}
-            </Typography>
+            {text}
           </Box>
+          
         </Paper>
     )
 }
