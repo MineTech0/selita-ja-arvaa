@@ -6,8 +6,12 @@ interface Props {
 }
 const useStyles = makeStyles((theme) => ({
     card: {
-      width: 540,
+      maxWidth: 500,
+      width: 'auto',
       height: 400,
+      paddingLeft: '2rem',
+      paddingRight: '2rem',
+      textAlign: 'center'
     },
     box: {
       height: "100%",
@@ -26,7 +30,7 @@ function WaitingCard({text}: Props): ReactElement {
           >
             {text}
           </Box>
-          
+
         </Paper>
     )
 }

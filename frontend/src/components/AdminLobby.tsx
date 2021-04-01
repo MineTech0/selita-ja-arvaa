@@ -18,12 +18,11 @@ import UserList from "./UserList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "3rem",
     flexGrow: 1,
   },
   paper: {
     padding: theme.spacing(4),
-    width: "40%",
+    maxWidth: 500,
     textAlign: 'center',
     
   },

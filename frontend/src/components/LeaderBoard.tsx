@@ -12,18 +12,17 @@ import React, { ReactElement } from "react";
 import useGame from "../hooks/useGame";
 import StarIcon from '@material-ui/icons/Star';
 
-interface Props {}
-
 const useStyles = makeStyles((theme) => ({
   card: {
     width: 240,
     height: 400,
+    overflow: 'auto',
   },
   box: {
     height: "100%",
   },
 }));
-function LeaderBoard({}: Props): ReactElement {
+function LeaderBoard(): ReactElement {
   const classes = useStyles();
 const { state } = useGame()
   return (

@@ -6,6 +6,8 @@ import EndRound from "./EndRound";
 import LeaderBoard from "./LeaderBoard";
 import TimerProgress from "./TimerProgress";
 import WaitingCard from "./WaitingCard";
+import { BrowserView, MobileView } from "react-device-detect";
+import MobileLeaderBoard from "./MobileLeaderBoard";
 
 const Game = () => {
   const { right, skip, myTurn, state, time } = useGame();
@@ -51,12 +53,17 @@ const Game = () => {
   };
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid item>
-        <LeaderBoard />
-      </Grid>
+        <Grid item>
+      <BrowserView>
+          <LeaderBoard />
+      </BrowserView>
+      <MobileView>
+        <MobileLeaderBoard/>
+      </MobileView>
+        </Grid>
       <Grid item>{Render()}</Grid>
       <Grid item>
-        <TimerProgress value={time}/>
+        <TimerProgress value={time} />
       </Grid>
     </Grid>
   );

@@ -22,7 +22,7 @@ import {
     },
     paper: {
       padding: theme.spacing(4),
-      width: "40%",
+      maxWidth: 500,
       textAlign: 'center',
       
     },
@@ -61,6 +61,12 @@ const PlayerLobby = (props: Props) => {
   
           <Grid item xs={12}>
             <UserList players={state.players} />
+          </Grid>
+        
+          <Grid item xs={12}>
+          <Typography variant="caption" display="block" gutterBottom>
+              Odota että pelinpitäjä aloittaa pelin
+            </Typography>
           </Grid>
         </Grid>
       </Paper>
