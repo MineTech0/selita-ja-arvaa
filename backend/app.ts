@@ -1,7 +1,6 @@
 import SocketIO from "socket.io";
 import { Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import Player from "./Player";
 import data from "./data.json";
 
 const words = data.words
@@ -37,7 +36,7 @@ const makeRoom = (resolve: any) => {
 };
 
 //Put the newly joined player into a room's player list
-const joinRoom = (player: Player, room: string) => {
+const joinRoom = (player: any, room: string) => {
   const currentRoom = rooms.get(room);
   const updatedPlayerList = currentRoom.players.concat(player);
   rooms.set(room, { ...currentRoom, players: updatedPlayerList });
@@ -81,7 +80,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
       room === "" ||
       name === "" ||
       !currentRoom ||
-      currentRoom.players.lenght >= 2
+      currentRoom.players.length >= 2
     ) {
       io.to(socket.id).emit("joinError");
       console.log("joinError");

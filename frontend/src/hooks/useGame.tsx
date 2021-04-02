@@ -108,6 +108,7 @@ const useProvideGame = (): GameContextI => {
         setState(s => ({ ...s, turn, words, gameState: "othersTurn" }));
       }
       Timer('start');
+      setWordIndex(0)
     });
 
     return () => {
