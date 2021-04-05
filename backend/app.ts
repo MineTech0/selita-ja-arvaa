@@ -1,9 +1,9 @@
+import { PairGameRoom } from "models/PairGameRoom";
+import { TeamGameRoom } from "models/TeamGameRoom";
 import SocketIO from "socket.io";
 import { Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import data from "./data.json";
 
-const words = data.words
 const server = require("http").createServer();
 const io = require("socket.io")(server, {
   cors: {
@@ -13,17 +13,8 @@ const io = require("socket.io")(server, {
 
 const PORT = 4000;
 
-const GetRandomWords = (count: number) => {
-  let list = [];
-  for (let index = 0; index < count; index++) {
-    list.push(words[Math.random() * words.length |0]);
-  }
-  return list;
-};
 
-//Store the room ids mapping to the room property object
-//The room property object looks like this {roomid:str, players:Array(2)}
-const rooms = new Map();
+const rooms = new Map<string, TeamGameRoom | PairGameRoom>();
 
 //Promise function to make sure room id is unique
 const makeRoom = (resolve: any) => {

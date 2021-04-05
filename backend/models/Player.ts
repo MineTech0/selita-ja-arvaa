@@ -1,8 +1,8 @@
 class Player {
-    name: string;
-    points: number;
-    admin: boolean;
     id: string
+    name: string;
+    points?: number;
+    admin: boolean;
     constructor(name: string, id: string) {
         this.name = name
         this.id = id
