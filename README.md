@@ -2,5 +2,5 @@
 
 Alias pelin kopioi, jota voit pelata internetin välityksellä
 
-#TechStack
+# TechStack
 React, Typescript, SocketIo, Node
