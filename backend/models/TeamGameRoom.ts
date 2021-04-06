@@ -3,14 +3,12 @@ import Player from './Player'
 import Room from './Room'
 
 export class TeamGameRoom extends Room {
-    players: Player[];
     settings: SettingsI;
     turn?: Team;
-    teams: Team[]
-    constructor(players: Player[], settings: SettingsI, roomId: string) {
-        super(roomId);
-        this.players = players;
+    teams: {[id: string]:Team}
+    constructor( settings: SettingsI) {
+        super();
         this.settings = settings;
-        this.teams = [];
+        this.teams = {};
     }
 }
