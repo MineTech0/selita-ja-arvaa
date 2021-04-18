@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { SettingsI } from "../hooks/useGame";
+import { SettingsI } from "../../../hooks/gameTypes";
 
 
 interface Props {

@@ -12,21 +12,8 @@ const PORT = 4000;
 
 const rooms = new Map<string, Room>();
 
-const { joinRoom, createRoom, leaveRoom } = require("./roomHandler")(io, rooms);
-
-const startRound = (room: string) => {
-  const currentRoom = rooms.get(room);
-  io.to(room).emit("startingGame", { startPlayer: currentRoom.turn, settings: currentRoom.settings });
-
-  const words = GetRandomWords(50);
-
-  setTimeout(() => {
-    io.to(room).emit("startRound", { words, turn: currentRoom.turn });
-    setTimeout(() => {
-      io.to(room).emit("endRound");
-    }, 1000* currentRoom.settings.time);
-  }, 6000);
-};
+const { joinRoom, createRoom, leaveRoom } = require("./handlers/roomHandler")(io, rooms);
+const { startGame, updatePoints ,nextRound } = require("./handlers/gameHandler")(io, rooms);
 
 io.on("connection", (socket: SocketIO.Socket) => {
   console.log("connection");
@@ -44,31 +31,11 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   socket.on("newRoomJoin", joinRoom);
 
-  socket.on("startGame", ({ settings, room }) => {
-    const currentRoom = rooms.get(room);
-    if (currentRoom.players.lenght < 2) {
-      io.to(room).emit("startError");
-    } else {
-      const turn = currentRoom.players[0];
-    rooms.set(room, { ...currentRoom, turn, settings });
-      startRound(room);
-    }
-  });
+  socket.on("startGame", startGame);
 
-  socket.on("changePoints", ({ newPlayers, room }) => {
-    const currentRoom = rooms.get(room);
-    rooms.set(room, { ...currentRoom, players: newPlayers });
-    socket.to(room).emit("newPlayers", { players: newPlayers });
-  });
+  socket.on("pointChange", updatePoints);
 
-  socket.on("nextRound", ({ room }) => {
-    const currentRoom = rooms.get(room);
-    const index = currentRoom.players.findIndex((p:any) => p.id === currentRoom.turn.id)
-    const turn =
-      currentRoom.players[ index === 0 ? 1:0];
-    rooms.set(room, { ...currentRoom, turn });
-    startRound(room);
-  });
+  socket.on("nextRound", nextRound);
 
   //On disconnect event
   socket.on("disconnecting", leaveRoom);

@@ -1,7 +1,7 @@
 class Player {
     id: string
     name: string;
-    points?: number;
+    points: number;
     admin: boolean;
     constructor(name: string, id: string) {
         this.name = name

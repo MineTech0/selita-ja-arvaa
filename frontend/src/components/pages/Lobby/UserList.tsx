@@ -8,8 +8,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import React from "react";
-import { Player } from "../hooks/useGame";
 import PersonIcon from "@material-ui/icons/Person";
+import { Player } from "../../../hooks/gameTypes";
 
 interface Props {
   players: Player[];

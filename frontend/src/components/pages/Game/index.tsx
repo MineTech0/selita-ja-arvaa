@@ -1,11 +1,11 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
-import useGame from "../hooks/useGame";
-import CardContainer from "./CardContainer";
+import useGame from "../../../hooks/useGame";
+import CardContainer from "../../templates/CardContainer";
 import EndRound from "./EndRound";
 import LeaderBoard from "./LeaderBoard";
 import TimerProgress from "./TimerProgress";
-import WaitingCard from "./WaitingCard";
+import WaitingCard from "../../templates/WaitingCard";
 import { BrowserView, MobileView } from "react-device-detect";
 import MobileLeaderBoard from "./MobileLeaderBoard";
 

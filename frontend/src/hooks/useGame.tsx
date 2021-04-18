@@ -8,16 +8,10 @@ import {
 } from "react";
 import { useHistory, useParams } from "react-router";
 import socketIOClient from "socket.io-client";
+import { Player, SettingsI, StateI } from "./gameTypes";
 
 const SOCKET_SERVER_URL = "http://localhost:4000";
 
-export interface Player {
-  id: string;
-  name: string;
-  room: string;
-  points: number;
-  admin: boolean;
-}
 export interface GameContextI {
   state: StateI;
   joinRoom: (room: string, name: string) => void;
@@ -28,20 +22,8 @@ export interface GameContextI {
   admin: () => boolean;
   nextRound: () => void;
   time: number;
-  settings: SettingsI
-}
-export interface SettingsI {
-  time: number;
-  adult: boolean;
-}
-export type GameState =  "myTurn" | "starting" |  "othersTurn" | "lobby" | "endRound";
-
-export interface StateI {
-  players: Player[];
-  turn: Player;
-  words: string[];
-  word: string;
-  gameState: GameState;
+  settings: SettingsI;
+  clients: Player[];
 }
 
   
@@ -54,6 +36,7 @@ const defaultState: StateI = {
 };
 const useProvideGame = (): GameContextI => {
   const [state, setState] = useState<StateI>(defaultState);
+  const [clients, setClients] = useState<Player[]>([] as Player[]);
   const [myTurn, setMyTurn] = useState(false);
   const [time, setTime] = useState(60)
   const [settings, setSettings] = useState<SettingsI>({} as SettingsI)
@@ -66,8 +49,12 @@ const useProvideGame = (): GameContextI => {
     console.log("registered");
     socketRef.current = socketIOClient(SOCKET_SERVER_URL);
 
-    socketRef.current.on("newPlayers", ({ players }: { players: Player[] }) => {
-      setState(s => ({ ...s, players }));
+    socketRef.current.on("newClient", ({ clients }: { clients: Player[] }) => {
+      console.log(clients)
+      setClients(clients);
+    });
+    socketRef.current.on("newGameState", ({ state }: { state:any }) => {
+      setState(s => ({ ...s, players:state.players }));
     });
     // socketRef.current.on("newState", ({ newPlayers}: { newPlayers: Player[] }) => {
     //   console.log(state);
@@ -85,14 +72,14 @@ const useProvideGame = (): GameContextI => {
       "startingGame",
       ({
         settings,
-        startPlayer,
+        turn,
       }: {
         settings: SettingsI;
-        startPlayer: Player;
+        turn: Player;
       }) => {
         setTime(settings.time)
         setSettings(settings);
-        if (startPlayer.id === socketRef.current?.id) {
+        if (turn.id === socketRef.current?.id) {
           setMyTurn(true);
         }
         else {
@@ -122,19 +109,15 @@ const useProvideGame = (): GameContextI => {
   };
   const startGame = (settings: SettingsI) => {
     setSettings(settings)
-    socketRef.current?.emit("startGame", { settings, room: roomId });
+    socketRef.current?.emit("startGame", { settings, room: roomId, type: 'Pair' });
   };
 
   const right = () => {
-    const newPlayers =  editPoints(1)
-    setState(s => ({...s, players:newPlayers}));
-    socketRef.current?.emit("changePoints", { newPlayers, room: roomId });
+    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: +1,  room: roomId });
     nextWord();
   };
   const skip = () => {
-    const newPlayers =  editPoints(-1)
-    setState(s => ({...s, players:newPlayers}));
-    socketRef.current?.emit("changePoints", { newPlayers, room: roomId });
+    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: -1,  room: roomId });
     nextWord();
   };
   const nextWord = () => {
@@ -145,19 +128,8 @@ const useProvideGame = (): GameContextI => {
     }));
   };
 
-  const editPoints = (modifier: -1 | 1) => {
-    let players = state.players;
-    console.log(players);
-    let meIndex = players.findIndex((p) => p.id === socketRef.current?.id);
-    players[meIndex] = {
-      ...players[meIndex],
-      points: players[meIndex].points + modifier,
-    };
-    return players;
-  };
-
   const admin = () => {
-    return state.players.find((p) => p.id === socketRef.current?.id)?.admin as boolean
+    return clients.find((p) => p.id === socketRef.current?.id)?.admin as boolean
 
   }
   const nextRound = () => {
@@ -188,7 +160,8 @@ const useProvideGame = (): GameContextI => {
     admin,
     nextRound,
     time,
-    settings
+    settings,
+    clients
   };
 };
 const GameContext = createContext<GameContextI | undefined>(undefined);

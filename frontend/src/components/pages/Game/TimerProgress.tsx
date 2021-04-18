@@ -4,7 +4,7 @@ import CircularProgress, {
 } from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import useGame from "../hooks/useGame";
+import useGame from "../../../hooks/useGame";
 
 export default function TimerProgress(
   props: CircularProgressProps & { value: number }

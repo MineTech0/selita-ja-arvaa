@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useParams } from "react-router";
-import useGame, { ProvideGame } from "../hooks/useGame";
+import { useState } from "react";
+import { useParams } from "react-router";
+import useGame from "../hooks/useGame";
 import {
   Button,
   Dialog,
@@ -9,8 +9,8 @@ import {
   DialogTitle,
   TextField,
 } from "@material-ui/core";
-import Game from "./Game";
-import Lobby from "./Lobby";
+import Game from "./pages/Game";
+import Lobby from "./pages/Lobby";
 
 function Room() {
   const [name, setName] = useState("");

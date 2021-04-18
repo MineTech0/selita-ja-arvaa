@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router';
-import useGame from '../hooks/useGame';
+import useGame from '../../../hooks/useGame';
 import AdminLobby from './AdminLobby'
-
 import PlayerLobby from './PlayerLobby';
+
 const Lobby = () => {
   const {admin} = useGame()
     return (

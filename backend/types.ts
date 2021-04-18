@@ -11,3 +11,4 @@ export interface Team {
     points: number;
     turn: Player;
 }
+export type GameType = 'Pair' | 'Team'

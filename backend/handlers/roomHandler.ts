@@ -1,5 +1,5 @@
-import Player from 'models/Player'
-import Room from 'models/Room'
+import Player from '../models/Player'
+import Room from '../models/Room'
 
 module.exports = (io: any, rooms: Map<string, Room>) => {
   const createRoom = function (this: any) {
@@ -7,7 +7,7 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
 
     const newRoom = new Room()
     rooms.set(newRoom.roomId, newRoom)
-    socket.emit('newGameCreated', newRoom)
+    socket.emit('newGameCreated', newRoom.roomId)
   }
 
   const joinRoom = function (
@@ -19,8 +19,7 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
     if (
       room === '' ||
       name === '' ||
-      !currentRoom ||
-      currentRoom.players.length >= 2
+      !currentRoom 
     ) {
       io.to(socket.id).emit('joinError')
       console.log('joinError')
@@ -28,8 +27,8 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
       socket.join(room)
       const newPlayer = new Player(name, socket.id)
       currentRoom.joinRoom(newPlayer)
-
-      io.to(room).emit('newPlayers', { players: currentRoom.players })
+      console.log(currentRoom.clients)
+      io.to(room).emit('newClient', { clients: currentRoom.clients })
     }
     rooms.set(room, currentRoom as Room)
   }
@@ -39,16 +38,16 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
 
     if (currentRooms.length === 2){
         const room = currentRooms[1]
-        const num = rooms.get(room)?.players.length
+        const num = rooms.get(room)?.clients.length
         if (num === 1){
             rooms.delete(room)
         }
         
         if (num === 2){
             const currentRoom = rooms.get(room)
-            currentRoom?.leaverRoom(socket.id)
+            currentRoom?.leaveRoom(socket.id)
             rooms.set(room, currentRoom as Room)
-            io.to(room).emit("newPlayers", { players: currentRoom?.players });
+            io.to(room).emit("newClient", { clients: currentRoom?.clients });
         }
     }
   }

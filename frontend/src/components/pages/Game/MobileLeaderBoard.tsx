@@ -9,7 +9,7 @@ import {
   } from "@material-ui/core";
   import  PersonIcon  from "@material-ui/icons/Person";
   import React, { ReactElement } from "react";
-  import useGame from "../hooks/useGame";
+  import useGame from "../../../hooks/useGame";
   import StarIcon from '@material-ui/icons/Star';
   
   const useStyles = makeStyles((theme) => ({

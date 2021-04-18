@@ -1,6 +1,6 @@
 import { Button, Grid, Typography } from "@material-ui/core";
 import React, { ReactElement } from "react";
-import useGame from "../hooks/useGame";
+import useGame from "../../../hooks/useGame";
 
 function EndRound(): ReactElement {
   const { nextRound, admin } = useGame();

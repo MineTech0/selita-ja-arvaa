@@ -1,19 +1,12 @@
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Grid,
     makeStyles,
     Paper,
-    TextField,
     Typography,
   } from "@material-ui/core";
-  import React, { useEffect, useState } from "react";
   import { useParams } from "react-router";
-  import useGame from "../hooks/useGame";
-  import UserList from "./UserList";
+import useGame from "../../../hooks/useGame";
+import UserList from "./UserList";
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,7 +30,7 @@ interface Props {
 
 const PlayerLobby = (props: Props) => {
     let { roomId } = useParams<{ roomId: string }>();
-    const { state } = useGame();
+    const { state,clients } = useGame();
 
     const classes = useStyles();
 
@@ -60,7 +53,7 @@ const PlayerLobby = (props: Props) => {
           </Grid>
   
           <Grid item xs={12}>
-            <UserList players={state.players} />
+            <UserList players={clients} />
           </Grid>
         
           <Grid item xs={12}>

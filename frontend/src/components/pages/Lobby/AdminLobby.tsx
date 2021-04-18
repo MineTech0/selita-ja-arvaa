@@ -1,18 +1,13 @@
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   makeStyles,
   Paper,
-  TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
-import useGame from "../hooks/useGame";
+import useGame from "../../../hooks/useGame";
 import Settings from "./Settings";
 import UserList from "./UserList";
 
@@ -32,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdminLobby = () => {
-  const { state, startGame } = useGame();
+  const { state, startGame, clients } = useGame();
   let { roomId } = useParams<{ roomId: string }>();
   const [settings, setSettings] = useState({
     time: 60,
@@ -62,13 +57,13 @@ const AdminLobby = () => {
         </Grid>
 
         <Grid item xs={6}>
-          <UserList players={state.players} />
+          <UserList players={clients} />
         </Grid>
         <Grid item xs={6}>
           <Settings setSettings={setSettings} />
         </Grid>
         <Grid item xs={12} className={classes.button}>
-          <Button variant="contained" color="primary" onClick={startButton} disabled={state.players.length < 2}>
+          <Button variant="contained" color="primary" onClick={startButton} disabled={clients.length < 2}>
             Aloita peli
           </Button>
         </Grid>
