@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-04-16T19:04:43.029Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="_y7RAJCfxeA4WHPcxNQn" version="14.6.0" type="github">
+<mxfile host="app.diagrams.net" modified="2021-04-18T17:39:58.147Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="xo2JE1HHotxjuH8y2pQ3" version="14.6.0" type="github">
   <diagram id="RwIbB6NBxAzTrsYU3exe" name="Page-1">
     <mxGraphModel dx="865" dy="457" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -177,8 +177,8 @@
             <mxPoint x="-49" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="1lvwulR27KDEm764Sf4F-53" value="&lt;font style=&quot;font-size: 10px&quot;&gt;{ turn: Player&amp;nbsp;}&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;" parent="1" vertex="1">
-          <mxGeometry x="290" y="850" width="80" height="20" as="geometry" />
+        <mxCell id="1lvwulR27KDEm764Sf4F-53" value="&lt;font style=&quot;font-size: 10px&quot;&gt;{ turn: Player&amp;nbsp;&lt;br&gt;settings: SettingsI&lt;br&gt;}&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;" parent="1" vertex="1">
+          <mxGeometry x="290" y="845" width="90" height="50" as="geometry" />
         </mxCell>
         <mxCell id="1lvwulR27KDEm764Sf4F-56" value="&lt;font style=&quot;font-size: 10px&quot;&gt;{ roomId: string }&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;" parent="1" vertex="1">
           <mxGeometry x="330" y="490" width="90" height="20" as="geometry" />
