@@ -39,11 +39,11 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
     if (currentRooms.length === 2){
         const room = currentRooms[1]
         const num = rooms.get(room)?.clients.length
-        if (num === 1){
+        if (num === 0){
             rooms.delete(room)
         }
         
-        if (num === 2){
+        else {
             const currentRoom = rooms.get(room)
             currentRoom?.leaveRoom(socket.id)
             currentRoom?.endGame()

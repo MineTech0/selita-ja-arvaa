@@ -44,7 +44,7 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
           if(gameExists(currentRoom)){
             io.to(room).emit('endRound')
           }
-        }, 1000 * currentRoom.game.settings.time)
+        }, 1000 * currentRoom.game?.settings?.time || 0)
       }, 6000)
     }
   }
