@@ -32,4 +32,7 @@ export default class Room {
         break
     }
   }
+  endGame(){
+    this.game  = {} as PairGame
+  }
 }

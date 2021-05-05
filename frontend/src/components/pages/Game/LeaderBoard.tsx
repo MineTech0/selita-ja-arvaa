@@ -36,7 +36,7 @@ const { state } = useGame()
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={player.name} secondary={player.points} />
-            {player.admin ? <StarIcon fontSize="small"/> : null}
+            {player.id === state.turn.id ? <StarIcon fontSize="small"/> : null}
           </ListItem>
         ))}
       </List>

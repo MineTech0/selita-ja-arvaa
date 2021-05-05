@@ -24,6 +24,7 @@ export interface GameContextI {
   time: number;
   settings: SettingsI;
   clients: Player[];
+  wordIndex: number;
 }
 
   
@@ -68,6 +69,11 @@ const useProvideGame = (): GameContextI => {
     socketRef.current.on("joinError", () => {
       history.push("/");
     });
+    socketRef.current.on("endGame", () => {
+      Timer('stop');
+      setTime(0)
+      setState(s => ({ ...s, gameState: "lobby" }));
+    });
     socketRef.current.on(
       "startingGame",
       ({
@@ -95,7 +101,7 @@ const useProvideGame = (): GameContextI => {
         setState(s => ({ ...s, turn, words, gameState: "othersTurn" }));
       }
       Timer('start');
-      setWordIndex(0)
+      setWordIndex(1)
     });
 
     return () => {
@@ -113,19 +119,21 @@ const useProvideGame = (): GameContextI => {
   };
 
   const right = () => {
-    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: +1,  room: roomId });
     nextWord();
+    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: +1,  room: roomId });
   };
   const skip = () => {
-    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: -1,  room: roomId });
     nextWord();
+    socketRef.current?.emit("pointChange", { targetId: socketRef.current?.id ,pointModifier: -1,  room: roomId });
   };
   const nextWord = () => {
-    setWordIndex(i => i +1)
+    console.log(wordIndex)
+    setWordIndex(wordIndex + 1)
     setState(s => ({
       ...s,
       word: s.words[wordIndex],
     }));
+    console.log(wordIndex)
   };
 
   const admin = () => {
@@ -161,7 +169,8 @@ const useProvideGame = (): GameContextI => {
     nextRound,
     time,
     settings,
-    clients
+    clients,
+    wordIndex
   };
 };
 const GameContext = createContext<GameContextI | undefined>(undefined);

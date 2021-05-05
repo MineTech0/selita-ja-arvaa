@@ -37,9 +37,13 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
       const words = GetRandomWords(50)
 
       setTimeout(() => {
-        io.to(room).emit('startRound', { words, turn: currentRoom.game.turn })
+        if(gameExists(currentRoom)){
+          io.to(room).emit('startRound', { words, turn: currentRoom.game.turn })
+        }
         setTimeout(() => {
-          io.to(room).emit('endRound')
+          if(gameExists(currentRoom)){
+            io.to(room).emit('endRound')
+          }
         }, 1000 * currentRoom.game.settings.time)
       }, 6000)
     }
@@ -71,6 +75,9 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
     currentRoom.game.nextTurn()
     rooms.set(room, currentRoom)
     startRound(room)
+  }
+  const gameExists = (room: Room): boolean => {
+    return Object.keys(room.game).length !== 0
   }
 
   return {

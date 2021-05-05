@@ -18,8 +18,7 @@ import {
         flexDirection: 'row',
     },
     paper: {
-        maxWidth: '88vw',
-        width: 'auto',
+        width: '100%',
         textAlign: 'center',
         overflow:'scroll',
     },

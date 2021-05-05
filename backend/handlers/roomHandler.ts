@@ -46,7 +46,10 @@ module.exports = (io: any, rooms: Map<string, Room>) => {
         if (num === 2){
             const currentRoom = rooms.get(room)
             currentRoom?.leaveRoom(socket.id)
+            currentRoom?.endGame()
             rooms.set(room, currentRoom as Room)
+            console.log('endgame')
+            io.to(room).emit("endGame");
             io.to(room).emit("newClient", { clients: currentRoom?.clients });
         }
     }
