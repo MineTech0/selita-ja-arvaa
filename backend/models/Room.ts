@@ -20,7 +20,11 @@ export default class Room {
     this.clients = this.clients.concat(player)
   }
   leaveRoom(playerId: string) {
+    const player = this.clients.find(p=> p.id === playerId)
     this.clients = this.clients.filter((player: any) => player.id !== playerId)
+    if(player?.admin){
+      this.clients[0] = {...this.clients[0], admin: true}
+    }
   }
   createGame(type: GameType, settings: SettingsI) {
     switch (type) {
