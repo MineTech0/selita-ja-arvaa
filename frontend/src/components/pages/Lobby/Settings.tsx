@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 const Settings = ({setSettings}: Props) => {
   const [time, setTime] = useState(60);
   const [adult, setAdult] = useState(false);
+  const [rounds, setRounds] = useState(5)
 
   useEffect(() => {
     setSettings({
@@ -54,6 +55,20 @@ const Settings = ({setSettings}: Props) => {
         max={120}
         value={time}
         onChange={(e, value) => setTime(value as number)}
+      />
+      <Typography id="discrete-slider" gutterBottom>
+        Kierrokset: {rounds}
+      </Typography>
+      <Slider
+        defaultValue={5}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={1}
+        marks
+        min={1}
+        max={30}
+        value={rounds}
+        onChange={(e, value) => setRounds(value as number)}
       />
       <FormControlLabel
         control={
