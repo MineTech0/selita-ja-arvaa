@@ -1,30 +1,30 @@
-import { Grid, Typography } from "@material-ui/core";
-import React from "react";
-import useGame from "../../../hooks/useGame";
-import CardContainer from "../../templates/CardContainer";
-import EndRound from "./EndRound";
-import LeaderBoard from "./LeaderBoard";
-import TimerProgress from "./TimerProgress";
-import WaitingCard from "../../templates/WaitingCard";
-import { BrowserView, MobileView } from "react-device-detect";
-import MobileLeaderBoard from "./MobileLeaderBoard";
+import { Button, Grid, Typography } from '@material-ui/core'
+import React from 'react'
+import useGame from '../../../hooks/useGame'
+import CardContainer from '../../templates/CardContainer'
+import EndRound from './EndRound'
+import LeaderBoard from './LeaderBoard'
+import TimerProgress from './TimerProgress'
+import WaitingCard from '../../templates/WaitingCard'
+import { BrowserView, MobileView } from 'react-device-detect'
+import MobileLeaderBoard from './MobileLeaderBoard'
 
 const Game = () => {
-  const { right, skip, myTurn, state, time } = useGame();
+  const { right, skip, myTurn, state, time } = useGame()
   const Render = () => {
     switch (state.gameState) {
-      case "myTurn":
-        return <CardContainer right={right} skip={skip} word={state.word} />;
+      case 'myTurn':
+        return <CardContainer right={right} skip={skip} word={state.word} />
 
-      case "othersTurn":
+      case 'othersTurn':
         let answerText = (
           <Typography variant="subtitle1">
             Arvaa kun kaverisi selittää
           </Typography>
-        );
-        return <WaitingCard text={answerText} />;
+        )
+        return <WaitingCard text={answerText} />
 
-      case "starting":
+      case 'starting':
         let startText = (
           <Grid
             container
@@ -40,33 +40,35 @@ const Game = () => {
             </Grid>
             <Grid item>
               <Typography variant="subtitle1" gutterBottom>
-                {myTurn ? "Sinä aloitat" : "Toinen pelaaja aloittaa"}
+                {myTurn ? 'Sinä aloitat' : 'Toinen pelaaja aloittaa'}
               </Typography>
             </Grid>
           </Grid>
-        );
-        return <WaitingCard text={startText} />;
+        )
+        return <WaitingCard text={startText} />
 
-      case "endRound":
-        return <WaitingCard text={<EndRound />} />;
+      case 'endRound':
+        return <WaitingCard text={<EndRound />} />
     }
-  };
+  }
   return (
     <Grid container direction="row" spacing={2}>
-        <Grid item>
-      <BrowserView>
+      <Grid item sm>
+        <BrowserView>
           <LeaderBoard />
-      </BrowserView>
-      <MobileView>
-        <MobileLeaderBoard/>
-      </MobileView>
-        </Grid>
-      <Grid item>{Render()}</Grid>
-      <Grid item>
+        </BrowserView>
+        <MobileView>
+          <MobileLeaderBoard />
+        </MobileView>
+      </Grid>
+      <Grid item sm={8}>
+        {Render()}
+      </Grid>
+      <Grid item sm={1}>
         <TimerProgress value={time} />
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default Game;
+export default Game
